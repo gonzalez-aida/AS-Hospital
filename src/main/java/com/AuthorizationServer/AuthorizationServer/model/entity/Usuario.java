@@ -28,7 +28,7 @@ public class Usuario {
     private Estado estado = Estado.ACTIVO;
     
     public enum Rol {
-        MEDICO, PACIENTE
+        MEDICO, PACIENTE, ADMIN
     }
     
     public enum Estado {
