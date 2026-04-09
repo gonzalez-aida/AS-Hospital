@@ -75,14 +75,15 @@ public class ResourceServer {
     @Bean
     @Order(3)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(authorize -> authorize
-                .anyRequest().authenticated()
-            )
-            .formLogin(Customizer.withDefaults());
+    http
+        .cors(Customizer.withDefaults()) 
+        .authorizeHttpRequests(authorize -> authorize
+            .anyRequest().authenticated()
+        )
+        .formLogin(Customizer.withDefaults());
 
-        return http.build();
-    }
+    return http.build();
+}
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

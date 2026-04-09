@@ -49,9 +49,7 @@ public class AuthorizationServer {
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://localhost:4200/callback")
-                .redirectUri("http://localhost:4173/callback")
-                .redirectUri("https://www.produccionxd.com/callback")
+                .redirectUri("https://frontendhospital.onrender.com/callback")
                 .scope("read")
                 .scope("write")
                 .tokenSettings(TokenSettings.builder()
@@ -102,7 +100,7 @@ public class AuthorizationServer {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
-                .issuer("http://localhost:9000")
+                .issuer("https://as-hospital.onrender.com")
                 .build();
     }
 
