@@ -136,7 +136,8 @@ public class AuthController {
             return ResponseEntity.ok(Map.of(
                 "rol", jwt.getClaim("rol"),
                 "idUsuario", jwt.getClaim("idUsuario"),
-                "correo", jwt.getClaim("correo")
+                "correo", jwt.getClaim("correo"),
+                "accessToken", accessToken
             ));
 
         } catch (Exception e) {
