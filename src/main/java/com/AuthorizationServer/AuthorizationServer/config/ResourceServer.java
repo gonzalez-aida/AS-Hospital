@@ -13,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,7 +24,7 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class ResourceServer {
 
-    // Filtro 1 — endpoints OAuth2 (/oauth2/token, /oauth2/authorize, etc.)
+    // Filtro 1 — endpoints OAuth2
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -39,14 +40,17 @@ public class ResourceServer {
                 authorize.anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
             )
-            .cors(Customizer.withDefaults());
+            .cors(Customizer.withDefaults())
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            );
 
         return http.build();
     }
 
-    // Filtro 2 — endpoints /api/** (login, exchange-code)
+    // Filtro 2 — endpoints /api/**
     @Bean
     @Order(2)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -71,19 +75,22 @@ public class ResourceServer {
         return http.build();
     }
 
-    // Filtro 3 — todo lo demás (formulario de login del flujo OAuth2)
+    // Filtro 3 — formulario de login
     @Bean
     @Order(3)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(Customizer.withDefaults()) 
-        .authorizeHttpRequests(authorize -> authorize
-            .anyRequest().authenticated()
-        )
-        .formLogin(Customizer.withDefaults());
+        http
+            .cors(Customizer.withDefaults())
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            )
+            .authorizeHttpRequests(authorize -> authorize
+                .anyRequest().authenticated()
+            )
+            .formLogin(Customizer.withDefaults());
 
-    return http.build();
-}
+        return http.build();
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
