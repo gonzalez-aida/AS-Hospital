@@ -42,10 +42,6 @@ public class AuthController {
     @Value("${oauth.redirect-uri}")
     private String redirectUri;
 
-    // true en producción, false en local
-    @Value("${cookie.secure:false}")
-    private boolean cookieSecure;
-
     public AuthController(AuthenticationManager authenticationManager, JwtDecoder jwtDecoder) {
         this.authenticationManager = authenticationManager;
         this.jwtDecoder = jwtDecoder;
@@ -119,8 +115,8 @@ public class AuthController {
             // Cookie para el access_token (30 minutos)
             ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
                 .httpOnly(true)
-                .secure(cookieSecure)
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .maxAge(Duration.ofMinutes(30))
                 .path("/")
                 .build();
@@ -128,8 +124,8 @@ public class AuthController {
             // Cookie para el refresh_token (1 día)
             ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
                 .httpOnly(true)
-                .secure(cookieSecure)
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .maxAge(Duration.ofDays(1))
                 .path("/")
                 .build();
@@ -137,8 +133,6 @@ public class AuthController {
             response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
             response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-            // Solo devuelve info no sensible al frontend
-            // El token ya NO viaja en el body
             return ResponseEntity.ok(Map.of(
                 "rol", jwt.getClaim("rol"),
                 "idUsuario", jwt.getClaim("idUsuario"),
@@ -153,22 +147,21 @@ public class AuthController {
         }
     }
 
-    // Endpoint para cerrar sesión — borra las cookies
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
 
         ResponseCookie deleteAccess = ResponseCookie.from("access_token", "")
             .httpOnly(true)
-            .secure(cookieSecure)
-            .sameSite("Lax")
-            .maxAge(0) // ← borra la cookie
+            .secure(true)
+            .sameSite("None")
+            .maxAge(0)
             .path("/")
             .build();
 
         ResponseCookie deleteRefresh = ResponseCookie.from("refresh_token", "")
             .httpOnly(true)
-            .secure(cookieSecure)
-            .sameSite("Lax")
+            .secure(true)
+            .sameSite("None")
             .maxAge(0)
             .path("/")
             .build();
