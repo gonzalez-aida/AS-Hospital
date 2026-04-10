@@ -134,11 +134,11 @@ public class AuthController {
             response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
             return ResponseEntity.ok(Map.of(
-                "rol", jwt.getClaim("rol"),
-                "idUsuario", jwt.getClaim("idUsuario"),
-                "correo", jwt.getClaim("correo"),
-                "accessToken", accessToken
-            ));
+            "rol", (String) jwt.getClaim("rol"),
+            "idUsuario", ((Number) jwt.getClaim("idUsuario")).longValue(),
+            "correo", (String) jwt.getClaim("correo"),
+        "accessToken", accessToken
+    ));
 
         } catch (Exception e) {
     e.printStackTrace(); // ← agrega esto
