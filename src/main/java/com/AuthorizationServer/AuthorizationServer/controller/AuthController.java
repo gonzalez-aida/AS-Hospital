@@ -141,11 +141,13 @@ public class AuthController {
             ));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                "error", "Error al canjear código",
-                "message", e.getMessage()
-            ));
-        }
+    e.printStackTrace(); // ← agrega esto
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+        "error", "Error al canjear código",
+        "message", e.getMessage(),
+        "cause", e.getCause() != null ? e.getCause().getMessage() : "sin causa"
+    ));
+}
     }
 
     @PostMapping("/logout")
